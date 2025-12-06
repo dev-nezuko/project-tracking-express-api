@@ -1,172 +1,41 @@
-# Express + TypeScript Coding Assessment
+# Project-tracking API exercise
 
-## Overview
+A small Express/TypeScript assessment about joining users, projects and tasks from JSON fixtures. The app mounts routers and parses JSON, but authentication, store access and route behavior remain TODOs. This is an unfinished exercise, not a working project-management backend.
 
-This is a **Node.js + Express.js + TypeScript** coding assessment designed for **intermediate engineers** .
+## Start by measuring the baseline
 
-You will implement a REST API for a simple project management system with Users, Projects, and Tasks.
+Use Node 22:
 
----
-
-## What You Receive
-
-- **`src/`** — Contains Express app structure with stub implementations (your work goes here)
-- **`data/`** — JSON files acting as a mock database
-- **`tests/`** — Vitest + Supertest test suite to validate your implementation
-- **Configuration files** — `package.json`, `tsconfig.json`, `vitest.config.ts`
-
-> ⚠️ **Note for Interviewers**: The `solutions/` directory contains fully implemented solutions and should NOT be shared with candidates. Run `npm run test:solutions` to verify the solutions pass all tests.
-
----
-
-## Your Task
-
-Implement the following components in the `src/` directory:
-
-### 1. Database Layer (`src/db/store.ts`)
-
-Implement helper functions to query the JSON data:
-- `getAllUsers()` — Returns all users
-- `getUserById(id)` — Returns a user by ID or undefined
-- `getAllProjects()` — Returns all projects
-- `getProjectById(id)` — Returns a project by ID or undefined
-- `getProjectsByOwner(userId)` — Returns all projects owned by a user
-- `getAllTasks()` — Returns all tasks
-- `getTasksByProject(projectId)` — Returns all tasks for a project
-- `createProject(data)` — Creates a new project in memory
-- `createTask(data)` — Creates a new task in memory
-
-### 2. Route Handlers (`src/routes/`)
-
-#### Projects Routes (`src/routes/projects.ts`)
-- `GET /projects` — List all projects (supports `?ownerId=` filter)
-- `GET /projects/:id` — Get a project by ID with its tasks
-- `POST /projects` — Create a new project
-
-#### Users Routes (`src/routes/users.ts`)
-- `GET /users/:id/summary` — Get user with their projects and task counts
-
-### 3. Middleware (`src/middleware/`)
-
-#### API Key Auth (`src/middleware/auth.ts`)
-- Check for `x-api-key` header
-- Valid key: `test-api-key-12345`
-- Return `401` with `{ "error": "Unauthorized" }` if missing or invalid
-
-#### Error Handler (`src/middleware/errorHandler.ts`)
-- Catch unhandled errors
-- Return `500` with `{ "error": "Internal Server Error" }`
-
----
-
-## Rules
-
-✅ **DO:**
-- Implement all TODO sections
-- Use proper TypeScript types (no `any`)
-- Return appropriate HTTP status codes
-- Handle edge cases (not found, invalid input)
-
-❌ **DO NOT:**
-- Change function signatures or return types
-- Modify test files
-- Change the project structure
-- Use external databases
-
----
-
-## Running the Project
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Run Tests
-
-```bash
+```sh
+npm ci --ignore-scripts
+npm run typecheck
 npm test
 ```
 
-All tests should pass when your implementation is complete.
+Type checking passes. All **21 acceptance tests currently fail** because the required implementation is absent. The provided source, tests and JSON fixtures are preserved in this presentation pass. `npm run dev` can start the scaffold, but its routes do not satisfy the target API.
 
-### Run Development Server (Optional)
+## Work through the data flow
 
-```bash
-npm run dev
+```mermaid
+flowchart LR
+  R[Mounted Express routes] --> H[Handlers: TODO]
+  H --> S[Store queries and mutations: TODO]
+  S --> D[Bundled users / projects / tasks JSON]
 ```
 
-Server runs on `http://localhost:3000`
+Implement `src/db/store.ts`, then the API-key/error middleware and project/user handlers. Preserve exported signatures and the supplied tests. The intended route set is:
 
----
+| Endpoint | Target behavior |
+| --- | --- |
+| `GET /projects` | List, optionally filter by owner |
+| `GET /projects/:id` | Include that project's tasks |
+| `POST /projects` | Validate and create in-memory project |
+| `GET /users/:id/summary` | User, owned projects and task counts |
 
-## API Endpoints Summary
+[API_EXERCISE.md](API_EXERCISE.md) retains the target request/response examples. The fixed `x-api-key` value in the exercise is a test fixture, not production security. The removed solutions command/config pointed to a directory that is not present; no working reference solution is included.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/projects` | List all projects |
-| GET | `/projects?ownerId=:id` | Filter projects by owner |
-| GET | `/projects/:id` | Get project with tasks |
-| POST | `/projects` | Create a new project |
-| GET | `/users/:id/summary` | Get user summary with projects |
+## What this can demonstrate after implementation
 
-All endpoints require the `x-api-key` header (except the API returns 401 without it).
+Typed relationships, data aggregation, request validation and consistent HTTP errors are the useful learning goals. The planned state is in memory after JSON loading; it has no durable writes, database transactions, user-specific authorization or concurrency guarantees. The current reset helper shallow-copies arrays, so future mutation of fixture objects also needs care.
 
----
-
-## Expected Response Shapes
-
-### GET /projects/:id
-```json
-{
-  "id": "proj-1",
-  "name": "Website Redesign",
-  "ownerId": "user-1",
-  "tasks": [
-    { "id": "task-1", "title": "Design mockups", "status": "done", "projectId": "proj-1" }
-  ]
-}
-```
-
-### GET /users/:id/summary
-```json
-{
-  "user": { "id": "user-1", "name": "Alice Johnson", "role": "manager" },
-  "projects": [
-    { "id": "proj-1", "name": "Website Redesign", "ownerId": "user-1" }
-  ],
-  "taskCounts": {
-    "proj-1": 3
-  }
-}
-```
-
-### POST /projects
-Request:
-```json
-{ "name": "New Project", "ownerId": "user-1" }
-```
-Response (201):
-```json
-{ "id": "generated-id", "name": "New Project", "ownerId": "user-1" }
-```
-
----
-
-## Evaluation Criteria
-
-1. **Correctness** — API behaves as specified
-2. **HTTP Standards** — Proper status codes (200, 201, 400, 401, 404, 500)
-3. **TypeScript** — Proper typing, no `any`
-4. **Code Organization** — Clean, readable code
-5. **Error Handling** — Graceful handling of edge cases
-
----
-
-## Estimated Time
-
-**60–90 minutes**
-
-Good luck! 🚀
-
+A completed implementation and passing tests would make this a useful practice example. It is not a strong portfolio pin beside completed full-stack projects. No UI screenshots, production-readiness claim or fabricated successful API response is supplied.

@@ -1,14 +1,14 @@
 {
   "name": "express-typescript-assessment",
   "version": "1.0.0",
-  "description": "Node.js + Express + TypeScript coding assessment for intermediate engineers",
+  "description": "Unfinished Express/TypeScript project-tracking exercise with JSON fixtures and acceptance tests",
   "type": "module",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:solutions": "vitest run --config vitest.solutions.config.ts",
     "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "express",
@@ -32,4 +32,3 @@
     "node": ">=20.0.0"
   }
 }
-
